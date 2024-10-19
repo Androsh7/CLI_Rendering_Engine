@@ -5,7 +5,7 @@ This is Windows and Linux compatible (though specific terminal emulators may not
 # Features
 - [ ] Printing
   - [X] Left aligned
-  - [ ] Right aligned (WIP)
+  - [X] Right aligned
   - [ ] Center aligned (WIP)
   - [X] Print Boundaries
   - [X] Cursor Tracking
