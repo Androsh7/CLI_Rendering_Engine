@@ -11,6 +11,4 @@ This is Windows and Linux compatible (though specific terminal emulators may not
   - [X] Cursor Tracking
 - [ ] Option Lists
   - [X] Custom highlighting options
-  - [ ] Keyboard Integration (WIP)
-- [ ] Grid Maps (WIP)
-- [ ] Geometry (WIP)
+  - [ ] Keyboard Integration (Demo Included)
