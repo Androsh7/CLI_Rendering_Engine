@@ -5,11 +5,12 @@ This is Windows and Linux compatible (though specific terminal emulators may not
 # Features
 - [ ] Printing
   - [X] Left aligned
-  - [ ] Right aligned
-  - [ ] Center aligned
+  - [ ] Right aligned (WIP)
+  - [ ] Center aligned (WIP)
   - [X] Print Boundaries
   - [X] Cursor Tracking
-- [X] Option Lists
+- [ ] Option Lists
   - [X] Custom highlighting options
+  - [ ] Keyboard Integration (WIP)
 - [ ] Grid Maps (WIP)
 - [ ] Geometry (WIP)
