@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include <windows.h>
 using namespace std;
 
 // I.E: cout << Black << "My Text" << RST_color;
@@ -78,6 +79,25 @@ private:
 public:
     point get_pos() {
         return cursor_pos;
+    }
+    
+    // gets the actual character length excluding ANSI terminal codes
+    unsigned int real_length(string in_string) {
+        int color_length = 0;
+        bool color_detected = false;
+        for (int i = 0; i < in_string.size(); i++) {
+            if (in_string.at(i) == '\033') {
+                color_detected = true;
+            }
+            if (color_detected) {
+                color_length++;
+                if (in_string.at(i) == 'm') {
+                    color_detected = false;
+                }
+            }
+        }
+
+        return in_string.size() - color_length;
     }
     
     // runs cout but keeps track of the cursor position and allows max_length restrictions
@@ -195,6 +215,42 @@ public:
         }
         return point{max_len, lines};
     }
+
+    // print a right-aligned string at the current cursor position, allows an optional specifier for max length and max lines
+    // returns a point structure {max_len, lines}
+    point print_right(string out_str, unsigned int max_print_len = 0, unsigned int max_print_lines = 0) {
+        string curr_string = "";
+        unsigned int max_len = 0;
+        unsigned int lines = 1;
+        
+        // ignore max_print_len if it equals zero
+        if (!max_print_len) max_print_len = 9999;
+
+        for (int i = 0; i < out_str.size(); i++) {
+            // quits early if max_print_lines is reached
+            if (max_print_lines && lines > max_print_lines) {
+                return point{max_len, lines};
+            }
+            if (out_str.at(i) == '\n') {
+                move_cursor_left(min(this->real_length(curr_string), max_print_len));
+                int printed_chars = print_str(curr_string, max_print_len);
+                move_cursor_down();
+                max_len = max(max_len, u_int(printed_chars));
+                lines++;
+                curr_string = "";
+                continue;
+            }
+            curr_string += out_str.at(i);
+        }
+
+        // prints the remaining value in curr_string
+        if (curr_string.size()) {
+            move_cursor_left(min(this->real_length(curr_string), max_print_len));
+            int printed_chars = print_str(curr_string, max_print_len);
+            max_len = max(max_len, u_int(printed_chars));
+        }
+        return point{max_len, lines};
+    }
 };
 cursor_write terminal;
 
@@ -261,15 +317,7 @@ public:
 };
 
 int main() {
-    terminal.set_cursor(point{4,0});
+    terminal.set_cursor(point{20,0});
     terminal.clear_screen();
-    option_list mylist(point{0,0});
-    mylist.add_option("The first Option\n");
-    mylist.add_option("Testing\n");
-    mylist.change_highlight(1, Green_Highlight);
-    mylist.add_option("Last option\n");
-    mylist.print_options();
-
-
     return 0;
 }
