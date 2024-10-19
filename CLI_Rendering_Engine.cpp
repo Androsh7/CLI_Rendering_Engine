@@ -254,6 +254,63 @@ public:
 };
 cursor_write terminal;
 
+// Get Keyboard State
+class keyboard_state {
+public:
+    short key_state_prev[256];
+    const int winlen = 51;
+    const char winkeylist[51] = { '\b', '\t', '\n', ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ';', '=', ',', '-', '.', '/', '`' , '[', '\\', ']', '\''};
+    const char altkeylist[51] = { '\b', '\t', '\n', ' ', ')', '!', '@', '#', '$', '%', '^', '&', '*', '(', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ':', '+', '<', '_', '>', '?', '~' , '{', '|' , '}', '\"'};
+    const int wincodelist[51] = { 8,    9,    13,   32,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  186, 187, 188, 189, 190, 191, 192,  219, 220,  221, 222 };
+    // given a character it fines the corresponding window key code
+    int find_key(char key) {
+        for (int i = 0; i < winlen; i++){
+            if (winkeylist[i] == key){
+                return wincodelist[i];
+            }
+        }
+        for (int i = 0; i < winlen; i++){
+            if (altkeylist[i] == key){
+                return wincodelist[i];
+            } 
+        }
+        return -1;
+    }
+
+    // returns an output depending on the state of the key
+    //  0 = key up, 1 = key pressed, 2 = key down
+    int get_key_press(int code){
+        // key press
+        if (GetKeyState(code) < 0){
+            if (key_state_prev[code] >= 0){
+                key_state_prev[code] = -127;
+                return 1; // key was just pressed
+            } else {
+                return 2; // key is currently pressed
+            }
+        }
+        key_state_prev[code] = 0;
+        return 0; // key is not pressed
+    }
+
+    // press enter to continue
+    int wait_for_enter() {
+        while (true) {
+            if (get_key_press(13) == 1) {
+                return 0;
+            }
+        }
+    }
+
+    // constructor
+    keyboard_state() {
+        for (int i = 0; i < 256; i++){
+            key_state_prev[i] = 0;
+        }
+    }
+};
+keyboard_state keyboard;
+
 class option_list {
 private:
     vector<string> options;
@@ -274,6 +331,11 @@ public:
             highlight.pop_back();
         }
         return 0;
+    }
+
+    // get length of options vector
+    int get_length() {
+        return options.size();
     }
 
     // prints all the options from the print location
@@ -319,5 +381,44 @@ public:
 int main() {
     terminal.set_cursor(point{20,0});
     terminal.clear_screen();
+    option_list example_list(point{0,0});
+    example_list.add_option("Option 1\n");
+    example_list.add_option("Option 2\n");
+    example_list.add_option("Option 3\n");
+    
+    int current_location = 0;
+    example_list.print_options();
+    bool first_key_enter = true;
+    while (true) {
+        bool update = false;
+        // W key
+        if (keyboard.get_key_press(87) == 1) {
+            current_location = max(current_location - 1, 0);
+            update = true;
+            first_key_enter = false;
+        }
+        // S key
+        else if (keyboard.get_key_press(83) == 1) {
+            current_location = min(current_location + 1, example_list.get_length() - 1);
+            update = true;
+            first_key_enter = false;
+        }
+        // Enter Key
+        else if (keyboard.get_key_press(13) == 1 && !first_key_enter) {
+            terminal.set_cursor(point{10,0});
+            terminal.print_left("YOU SELECTED OPTION " + to_string(current_location) + '\n');
+            while (true) {} // infinite loop to show end cursor location
+        }
+
+        if (update) {
+            // Set highlighting
+            example_list.reset_highlight();
+            example_list.change_highlight(current_location, White_Highlight);
+
+            // print
+            example_list.print_options();
+            update = false;
+        }
+    }
     return 0;
 }
