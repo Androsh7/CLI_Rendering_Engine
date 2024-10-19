@@ -9,6 +9,6 @@ This is Windows and Linux compatible (though specific terminal emulators may not
   - [ ] Center aligned (WIP)
   - [X] Print Boundaries
   - [X] Cursor Tracking
-- [ ] Option Lists
+- [X] Option Lists
   - [X] Custom highlighting options
-  - [ ] Keyboard Integration (Demo Included)
+  - [X] Keyboard Integration (Demo Included)
