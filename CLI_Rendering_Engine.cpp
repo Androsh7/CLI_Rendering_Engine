@@ -5,6 +5,33 @@
 #include <windows.h>
 using namespace std;
 
+/*
+CLI_Rendering_Engine
+By Androsh7
+
+MIT License
+
+Copyright (c) 2024 Androsh7
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 // I.E: cout << Black << "My Text" << RST_color;
 #define RST_color string("\033[0m") // Terminal Color Code
 #define Black string("\033[30m") // Terminal Color Code
@@ -373,6 +400,44 @@ public:
         return -1;
     }
 
+    // holds the user in a while loop where they must select a specified option
+    // exit codes: -1 user quit early, 0 - 9999 selection code
+    int run_options() {
+        bool option_change = false;
+        bool first_key_pressed = false; // this requires the user to press a key besides ENTER before making a selection
+        int current_pos = 0;
+        print_options();
+        while (true) {
+            // Up option (W key pressed)
+            if (keyboard.get_key_press(87) == 1) {
+                current_pos = max(current_pos - 1, 0);
+                option_change = true;
+                first_key_pressed = true;
+            }
+            // Down option (S key pressed)
+            else if (keyboard.get_key_press(83) == 1) {
+                current_pos = min(current_pos + 1, int(options.size()));
+                option_change = true;
+                first_key_pressed = true;
+            }
+            // Select option (ENTER key pressed)
+            else if (keyboard.get_key_press(13) == 1 && first_key_pressed) {
+                return current_pos;
+            }
+            // Quit option (Q key pressed)
+            else if (keyboard.get_key_press(81) == 1) {
+                return -1;
+            }
+
+            if (option_change) {
+                reset_highlight();
+                change_highlight(current_pos, White_Highlight);
+                print_options();
+                option_change = false;
+            }
+        }
+    }
+
     option_list(point start_point) {
         print_loc = start_point;
     }
@@ -385,40 +450,5 @@ int main() {
     example_list.add_option("Option 1\n");
     example_list.add_option("Option 2\n");
     example_list.add_option("Option 3\n");
-    
-    int current_location = 0;
-    example_list.print_options();
-    bool first_key_enter = true;
-    while (true) {
-        bool update = false;
-        // W key
-        if (keyboard.get_key_press(87) == 1) {
-            current_location = max(current_location - 1, 0);
-            update = true;
-            first_key_enter = false;
-        }
-        // S key
-        else if (keyboard.get_key_press(83) == 1) {
-            current_location = min(current_location + 1, example_list.get_length() - 1);
-            update = true;
-            first_key_enter = false;
-        }
-        // Enter Key
-        else if (keyboard.get_key_press(13) == 1 && !first_key_enter) {
-            terminal.set_cursor(point{10,0});
-            terminal.print_left("YOU SELECTED OPTION " + to_string(current_location) + '\n');
-            while (true) {} // infinite loop to show end cursor location
-        }
-
-        if (update) {
-            // Set highlighting
-            example_list.reset_highlight();
-            example_list.change_highlight(current_location, White_Highlight);
-
-            // print
-            example_list.print_options();
-            update = false;
-        }
-    }
-    return 0;
+    cout << example_list.run_options() << '\n';
 }
