@@ -206,6 +206,17 @@ public:
         return 0;
     }
 
+    int fill_area(point start_fill,unsigned int x_len, unsigned int y_len = 1, char fill_char = ' ') {
+        set_cursor(start_fill);
+        for (int y = 0; y < y_len; y++) {
+            for (int x = 0; x < x_len; x++) {
+                cout << fill_char;   
+            }
+            set_cursor(point{start_fill.x, start_fill.y + y});
+        }
+        return 0;
+    }
+    
     // print a left-aligned string at the current cursor position, allows an optional specifier for max length and max lines
     // returns a point structure {max_len, lines}
     point print_left(string out_str, unsigned int max_print_len = 0, unsigned int max_print_lines = 0) {
@@ -343,6 +354,7 @@ private:
     vector<string> options;
     vector<string> highlight;
     point print_loc;
+    int selected = 0;
 public:
     // adds an option to the bottom of the list
     int add_option(string option) {
@@ -369,7 +381,19 @@ public:
     int print_options() {
         terminal.set_cursor(print_loc);
         for (int i = 0; i < options.size(); i++) {
-            terminal.print_left(highlight.at(i) + options.at(i) + RST_color);
+            string curr_highlight = "";
+            if (i == selected) {
+                if (highlight.at(i) == "") {
+                    curr_highlight = White_Highlight;
+                }
+                else {
+                    curr_highlight = Purple_Highlight;
+                }
+            }
+            else {
+                curr_highlight = highlight.at(i);
+            }
+            terminal.print_left(curr_highlight + options.at(i) + RST_color);
         }
         return 0;
     }
@@ -385,6 +409,17 @@ public:
     int reset_highlight() {
         for (int i = 0; i < highlight.size(); i++) {
             highlight.at(i) = "";
+        }
+        return 0;
+    }
+
+    // invert the highlighting for a tile
+    int invert_highlight(int index, string color = Red_Highlight) {
+        if (highlight.at(index) == "") {
+            highlight.at(index) = Red_Highlight;
+        }
+        else {
+            highlight.at(index) = "";
         }
         return 0;
     }
@@ -405,33 +440,39 @@ public:
     int run_options() {
         bool option_change = false;
         bool first_key_pressed = false; // this requires the user to press a key besides ENTER before making a selection
-        int current_pos = 0;
         print_options();
         while (true) {
             // Up option (W key pressed)
             if (keyboard.get_key_press(87) == 1) {
-                current_pos = max(current_pos - 1, 0);
+                selected = max(selected - 1, 0);
                 option_change = true;
                 first_key_pressed = true;
             }
             // Down option (S key pressed)
             else if (keyboard.get_key_press(83) == 1) {
-                current_pos = min(current_pos + 1, int(options.size()));
+                selected = min(selected + 1, int(options.size() - 1));
                 option_change = true;
                 first_key_pressed = true;
             }
+            // Right option (D key pressed)
+            else if (keyboard.get_key_press(68) == 1) {
+                return selected;
+            }
+            // Left option (A key pressed)
+            else if (keyboard.get_key_press(65) == 1) {
+                return -1;
+            }
             // Select option (ENTER key pressed)
             else if (keyboard.get_key_press(13) == 1 && first_key_pressed) {
-                return current_pos;
+                invert_highlight(selected);
+                print_options();
             }
             // Quit option (Q key pressed)
             else if (keyboard.get_key_press(81) == 1) {
-                return -1;
+                return -2;
             }
 
             if (option_change) {
-                reset_highlight();
-                change_highlight(current_pos, White_Highlight);
                 print_options();
                 option_change = false;
             }
@@ -450,5 +491,52 @@ int main() {
     example_list.add_option("Option 1\n");
     example_list.add_option("Option 2\n");
     example_list.add_option("Option 3\n");
-    cout << example_list.run_options() << '\n';
+    option_list sub_list_1(point{10,0});
+    sub_list_1.add_option("Sub-Option 1.1\n");
+    sub_list_1.add_option("Sub-Option 1.2\n");
+    sub_list_1.add_option("Sub-Option 1.3\n");
+    option_list sub_list_2(point{10,0});
+    sub_list_2.add_option("Sub-Option 2.1\n");
+    sub_list_2.add_option("Sub-Option 2.2\n");
+    sub_list_2.add_option("Sub-Option 2.3\n");
+    option_list sub_list_3(point{10,0});
+    sub_list_3.add_option("Sub-Option 3.1\n");
+    sub_list_3.add_option("Sub-Option 3.2\n");
+    sub_list_3.add_option("Sub-Option 3.3\n");
+    while (true) {
+        int list_1 = example_list.run_options();
+        terminal.set_cursor(point{0,10});
+        terminal.print_left("Hello");
+        int sub_1 = 0, sub_2 = 0, sub_3 = 0;
+        while (list_1 == 0) {
+            int sub_1 = sub_list_1.run_options();
+            if (sub_1 == -2) {
+                return 0;
+            }
+            else if (sub_1 == -1) {
+                break;
+            }
+        }
+        while (list_1 == 1) {
+            int sub_2 = sub_list_2.run_options();
+            if (sub_2 == -2) {
+                return 0;
+            }
+            else if (sub_2 == -1) {
+                break;
+            }
+        }
+        while (list_1 == 2) {
+            int sub_3 = sub_list_3.run_options();
+            if (sub_3 == -2) {
+                return 0;
+            }
+            else if (sub_3 == -1) {
+                break;
+            }
+        }
+        if (list_1 == -2) {
+            return 0;
+        }
+    }    
 }
