@@ -7,6 +7,7 @@ This is Windows and Linux compatible (though specific terminal emulators may not
   - [X] Left aligned
   - [X] Right aligned
   - [ ] Center aligned (WIP)
+  - [X] Fill Area
   - [X] Print Boundaries
   - [X] Cursor Tracking
 - [X] Option Lists
