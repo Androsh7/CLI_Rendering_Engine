@@ -5,7 +5,7 @@ import re
 # |                    Github.com/Androsh7/CLI_Rendering_Engine                      |
 #  \--------------------------------------------------------------------------------/
 
-# dictionary for standard cli_color codes
+# dictionary for cli color codes
 cli_color = {
     "reset": "\033[0m",
 
@@ -99,6 +99,8 @@ class cli_render:
             padding = len(trimmed_line) - prev_len
             print(" " * padding, end="", sep="")
         
+        print("\n", end="", sep="") # this prevents issues with lines not rendering
+
         self.line_counter += 1
     
     @classmethod
@@ -117,8 +119,10 @@ class cli_render:
         self.line_counter = self.start_line
 
 cli = cli_render
+
 #  /--------------------------------------------------------------------------------\
-# |                               CLI RENDERING ENGINE                               |
+# |                       CLI RENDERING ENGINE - By Androsh7                         |
+# |                    Github.com/Androsh7/CLI_Rendering_Engine                      |
 #  \--------------------------------------------------------------------------------/
 
 cli.clear_screen()
