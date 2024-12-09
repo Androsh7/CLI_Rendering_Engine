@@ -33,3 +33,41 @@ This is a collection of rendering engines in various languages
 #define Cyan_Highlight string("\033[46m") // Terminal Color Code
 #define White_Highlight string("\033[47m") // Terminal Color Code
 ```
+
+## Python Format
+```
+# dictionary for cli color codes
+cli_color = {
+    "reset": "\033[0m",
+
+    # standard colors
+    "black": "\033[30m",
+    "blue": "\033[34m",
+    "green": "\033[32m",
+    "cyan": "\033[36m",
+    "red": "\033[31m",
+    "purple": "\033[35m",
+    "brown": "\033[33m",
+    "yellow": "\033[1;33m",
+    "white": "\033[1;37m",
+
+    # light/dark colors
+    "light_gray": "\033[33[37m",
+    "dark_gray": "\033[33[1;30m",
+    "light_blue": "\033[33[1;34m",
+    "light_green": "\033[33[1;32m",
+    "light_cyan": "\033[33[1;36m",
+    "light_red": "\033[33[1;31m",
+    "light_purple": "\033[33[1;35m",
+
+    # highlights
+    "black_highlight": "\033[40m",
+    "red_highlight": "\033[41m",
+    "green_highlight": "\033[42m",
+    "yellow_highlight": "\033[43m",
+    "blue_highlight": "\033[44m",
+    "purple_highlight": "\033[45m",
+    "cyan_highlight": "\033[46m",
+    "white_highlight": "\033[47m",
+}
+```
