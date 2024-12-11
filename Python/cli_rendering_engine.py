@@ -1,50 +1,50 @@
+#!/usr/bin/python3
 import re
-
 #  /--------------------------------------------------------------------------------\
 # |                       CLI RENDERING ENGINE - By Androsh7                         |
-# |                    Github.com/Androsh7/CLI_Rendering_Engine                      |
+# |                    github.com/Androsh7/CLI_Rendering_Engine                      |
 #  \--------------------------------------------------------------------------------/
-
-# dictionary for cli color codes
-cli_color = {
-    "reset": "\033[0m",
-
-    # standard colors
-    "black": "\033[30m",
-    "blue": "\033[34m",
-    "green": "\033[32m",
-    "cyan": "\033[36m",
-    "red": "\033[31m",
-    "purple": "\033[35m",
-    "brown": "\033[33m",
-    "yellow": "\033[1;33m",
-    "white": "\033[1;37m",
-
-    # light/dark colors
-    "light_gray": "\033[33[37m",
-    "dark_gray": "\033[33[1;30m",
-    "light_blue": "\033[33[1;34m",
-    "light_green": "\033[33[1;32m",
-    "light_cyan": "\033[33[1;36m",
-    "light_red": "\033[33[1;31m",
-    "light_purple": "\033[33[1;35m",
-
-    # highlights
-    "black_highlight": "\033[40m",
-    "red_highlight": "\033[41m",
-    "green_highlight": "\033[42m",
-    "yellow_highlight": "\033[43m",
-    "blue_highlight": "\033[44m",
-    "purple_highlight": "\033[45m",
-    "cyan_highlight": "\033[46m",
-    "white_highlight": "\033[47m",
-}
 
 class cli_render:
     start_line = 1 # y-offset to start printing on
     line_counter = start_line # keeps track of the current y-offset
     rendered_lines = [] # this stores all rendered lines
     prev_rendered_lines = []  # this stores all previously rendered lines
+
+    # dictionary for cli color codes
+    color = {
+        "reset": "\033[0m",
+
+        # standard colors
+        "black": "\033[30m",
+        "blue": "\033[34m",
+        "green": "\033[32m",
+        "cyan": "\033[36m",
+        "red": "\033[31m",
+        "purple": "\033[35m",
+        "brown": "\033[33m",
+        "yellow": "\033[1;33m",
+        "white": "\033[1;37m",
+
+        # light/dark colors
+        "light_gray": "\033[33[37m",
+        "dark_gray": "\033[33[1;30m",
+        "light_blue": "\033[33[1;34m",
+        "light_green": "\033[33[1;32m",
+        "light_cyan": "\033[33[1;36m",
+        "light_red": "\033[33[1;31m",
+        "light_purple": "\033[33[1;35m",
+
+        # highlights
+        "black_highlight": "\033[40m",
+        "red_highlight": "\033[41m",
+        "green_highlight": "\033[42m",
+        "yellow_highlight": "\033[43m",
+        "blue_highlight": "\033[44m",
+        "purple_highlight": "\033[45m",
+        "cyan_highlight": "\033[46m",
+        "white_highlight": "\033[47m",
+    }
 
     @classmethod
     # clears the screen without moving the cursor
@@ -117,18 +117,3 @@ class cli_render:
         self.prev_rendered_lines = self.rendered_lines
         self.rendered_lines.clear()
         self.line_counter = self.start_line
-
-cli = cli_render
-
-#  /--------------------------------------------------------------------------------\
-# |                       CLI RENDERING ENGINE - By Androsh7                         |
-# |                    Github.com/Androsh7/CLI_Rendering_Engine                      |
-#  \--------------------------------------------------------------------------------/
-
-cli.clear_screen()
-cli.print_line("Hello World")
-cli.print_line("Hello World2")
-cli.print_line("Hellld5")
-cli.clear_lines()
-cli.reset()
-cli.print_line("Hd4")
